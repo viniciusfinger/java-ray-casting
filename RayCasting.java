@@ -1,38 +1,31 @@
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.List;
-
-import javax.swing.SwingUtilities;
 
 public class RayCasting {
 
     public static void main(String[] args) {
         
-        Point testPoint = new Point(50, 50);
-        boolean drawResult = true;
+        Point2D.Double testPoint = new Point2D.Double(-74.005974, 40.712776);
 
-        List<Point> polygon = List.of(
-            new Point(50, 50),
-            new Point(50, 150),
-            new Point(150, 200),
-            new Point(250, 150),
-            new Point(250, 50)
-    );
+        List<Point2D.Double> testPolygon = List.of(
+            new Point2D.Double(-74.006, 40.71),
+            new Point2D.Double(-74.006, 40.72),
+            new Point2D.Double(-74.002, 40.725),
+            new Point2D.Double(-73.997, 40.722),
+            new Point2D.Double(-73.994, 40.717)
+        );
 
-        boolean isInside = isPointInsidePolygon(testPoint, polygon);
+        boolean isInside = isPointInsidePolygon(testPoint, testPolygon);
         System.out.println("Is the point inside the polygon? " + isInside);
-
-        if (drawResult){
-            SwingUtilities.invokeLater(() -> new RayCastingVisualization(polygon, testPoint));
-        }
     }
 
-    public static boolean isPointInsidePolygon(Point point, List<Point> polygon) {
+    public static boolean isPointInsidePolygon(Point2D.Double point, List<Point2D.Double> polygon) {
         int intersections = 0;
         int numVertices = polygon.size();
 
         for (int i = 0; i < numVertices; i++) {
-            Point vertex1 = polygon.get(i);
-            Point vertex2 = polygon.get((i + 1) % numVertices);
+            Point2D.Double vertex1 = polygon.get(i);
+            Point2D.Double vertex2 = polygon.get((i + 1) % numVertices);
 
             if (rayIntersectsSegment(point, vertex1, vertex2)) {
                 intersections++;
@@ -43,19 +36,21 @@ public class RayCasting {
         return intersections % 2 == 1;
     }
 
-    private static boolean rayIntersectsSegment(Point point, Point vertex1, Point vertex2) {
+    private static boolean rayIntersectsSegment(Point2D.Double point, Point2D.Double vertex1, Point2D.Double vertex2) {
         double x = point.getX();
         double y = point.getY();
-        double x1 = vertex1.getX();
-        double y1 = vertex1.getY();
-        double x2 = vertex2.getX();
-        double y2 = vertex2.getY();
+
+        double vertex1x = vertex1.getX();
+        double vertex1y = vertex1.getY();
+
+        double vertex2x = vertex2.getX();
+        double vertex2y = vertex2.getY();
 
         // Check if the point is within the y-bounds of the segment
-        if ((y1 <= y && y < y2) || (y2 <= y && y < y1)) {
+        if ((vertex1y <= y && y < vertex2y) || (vertex2y <= y && y < vertex1y)) {
             
             // Calculate the x-coordinate of the intersection point
-            double xIntersection = (y - y1) / (y2 - y1) * (x2 - x1) + x1;
+            double xIntersection = (y - vertex1y) / (vertex2y - vertex1y) * (vertex2x - vertex1x) + vertex1x;
 
             // Count the intersection if the x-coordinate is greater than the test point's x-coordinate
             if (x < xIntersection) {
