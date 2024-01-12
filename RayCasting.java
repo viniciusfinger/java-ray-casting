@@ -3,6 +3,8 @@ import java.util.List;
 
 public class RayCasting {
 
+    private RayCasting(){}
+
     public static boolean isPointInsidePolygon(Point2D.Double point, List<Point2D.Double> polygon) {
         int intersections = 0;
         int numVertices = polygon.size();
